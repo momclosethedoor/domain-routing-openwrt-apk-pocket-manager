@@ -1,6 +1,6 @@
 [English role README](https://github.com/itdoginfo/domain-routing-openwrt/blob/master/README.EN.md)
 
-#ДИСКЛЕЙМЕР
+# ДИСКЛЕЙМЕР
 Это форк великолепной работы https://github.com/itdoginfo/domain-routing-openwrt/ от itdoginfo. Репоз клонировал исключительно для себя, из изменений только смена пакетного менеджера, чтобы скрипт работал на последних версиях OpenWRT Snapshot`ов.
 
 # Описание
