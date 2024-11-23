@@ -111,7 +111,7 @@ add_tunnel() {
 
     if [ "$TUNNEL" == 'wg' ]; then
         printf "\033[32;1mConfigure WireGuard\033[0m\n"
-        if apk list --installed | grep -q wireguard-tools; then
+        if apk list --installed | grep wireguard-tools; then
             echo "Wireguard already installed"
         else
             echo "Installed wg..."
@@ -163,7 +163,7 @@ add_tunnel() {
     fi
 
     if [ "$TUNNEL" == 'ovpn' ]; then
-        if apk list --installed | grep -q openvpn-openssl; then
+        if apk list --installed | grep openvpn-openssl; then
             echo "OpenVPN already installed"
         else
             echo "Installed openvpn"
@@ -174,7 +174,7 @@ add_tunnel() {
     fi
 
     if [ "$TUNNEL" == 'singbox' ]; then
-        if apk list --installed | grep -q sing-box; then
+        if apk list --installed | grep sing-box; then
             echo "Sing-box already installed"
         else
             AVAILABLE_SPACE=$(df / | awk 'NR>1 { print $4 }')
@@ -315,7 +315,7 @@ EOF
 }
 
 dnsmasqfull() {
-    if apk list --installed | grep -q dnsmasq-full; then
+    if apk list --installed | grep dnsmasq-full; then
         printf "\033[32;1mdnsmasq-full already installed\033[0m\n"
     else
         printf "\033[32;1mInstalled dnsmasq-full\033[0m\n"
@@ -509,7 +509,7 @@ add_dns_resolver() {
     done
 
     if [ "$DNS_RESOLVER" == 'DNSCRYPT' ]; then
-        if apk list --installed | grep -q dnscrypt-proxy2; then
+        if apk list --installed | grep dnscrypt-proxy2; then
             printf "\033[32;1mDNSCrypt2 already installed\033[0m\n"
         else
             printf "\033[32;1mInstalled dnscrypt-proxy2\033[0m\n"
@@ -543,7 +543,7 @@ add_dns_resolver() {
     if [ "$DNS_RESOLVER" == 'STUBBY' ]; then
         printf "\033[32;1mConfigure Stubby\033[0m\n"
 
-        if apk list --installed | grep -q stubby; then
+        if apk list --installed | grep stubby; then
             printf "\033[32;1mStubby already installed\033[0m\n"
         else
             printf "\033[32;1mInstalled stubby\033[0m\n"
@@ -565,7 +565,7 @@ add_dns_resolver() {
 
 add_packages() {
     for package in curl nano; do
-        if apk list --installed | grep -q "^$package "; then
+        if apk list --installed | grep "^$package "; then
             printf "\033[32;1m$package already installed\033[0m\n"
         else
             printf "\033[32;1mInstalling $package...\033[0m\n"
@@ -684,7 +684,7 @@ add_internal_wg() {
         PROTO="wireguard"
         ZONE_NAME="wg_internal"
 
-        if apk list --installed | grep -q wireguard-tools; then
+        if apk list --installed | grep wireguard-tools; then
             echo "Wireguard already installed"
         else
             echo "Installed wg..."
@@ -877,7 +877,7 @@ install_awg_packages() {
     AWG_DIR="/tmp/amneziawg"
     mkdir -p "$AWG_DIR"
 
-    if apk list --installed | grep -q amneziawg-tools; then
+    if apk list --installed | grep amneziawg-tools; then
         echo "amneziawg-tools already installed"
     else
         AMNEZIAWG_TOOLS_FILENAME="amneziawg-tools${PKGPOSTFIX}"
@@ -901,7 +901,7 @@ install_awg_packages() {
         fi
     fi
     
-    if apk list --installed | grep -q kmod-amneziawg; then
+    if apk list --installed | grep kmod-amneziawg; then
         echo "kmod-amneziawg already installed"
     else
         KMOD_AMNEZIAWG_FILENAME="kmod-amneziawg${PKGPOSTFIX}"
@@ -925,7 +925,7 @@ install_awg_packages() {
         fi
     fi
     
-    if apk list --installed | grep -q luci-app-amneziawg; then
+    if apk list --installed | grep luci-app-amneziawg; then
         echo "luci-app-amneziawg already installed"
     else
         LUCI_APP_AMNEZIAWG_FILENAME="luci-app-amneziawg${PKGPOSTFIX}"
