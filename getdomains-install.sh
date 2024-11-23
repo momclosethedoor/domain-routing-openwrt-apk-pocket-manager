@@ -111,11 +111,11 @@ add_tunnel() {
 
     if [ "$TUNNEL" == 'wg' ]; then
         printf "\033[32;1mConfigure WireGuard\033[0m\n"
-        if apk list-installed | grep -q wireguard-tools; then
+        if apk list --installed wireguard-tools; then
             echo "Wireguard already installed"
         else
             echo "Installed wg..."
-            apk install wireguard-tools
+            apk add wireguard-tools
         fi
 
         route_vpn
@@ -163,24 +163,24 @@ add_tunnel() {
     fi
 
     if [ "$TUNNEL" == 'ovpn' ]; then
-        if apk list-installed | grep -q openvpn-openssl; then
+        if apk list --installed openvpn-openssl; then
             echo "OpenVPN already installed"
         else
             echo "Installed openvpn"
-            apk install openvpn-openssl
+            apk add openvpn-openssl
         fi
         printf "\033[32;1mConfigure route for OpenVPN\033[0m\n"
         route_vpn
     fi
 
     if [ "$TUNNEL" == 'singbox' ]; then
-        if apk list-installed | grep -q sing-box; then
+        if apk list --installed sing-box; then
             echo "Sing-box already installed"
         else
             AVAILABLE_SPACE=$(df / | awk 'NR>1 { print $4 }')
             if  [[ "$AVAILABLE_SPACE" -gt 2000 ]]; then
                 echo "Installed sing-box"
-                apk install sing-box
+                apk add sing-box
             else
                 printf "\033[31;1mNo free space for a sing-box. Sing-box is not installed.\033[0m\n"
                 exit 1
@@ -315,12 +315,12 @@ EOF
 }
 
 dnsmasqfull() {
-    if apk list-installed | grep -q dnsmasq-full; then
+    if apk list --installed dnsmasq-full; then
         printf "\033[32;1mdnsmasq-full already installed\033[0m\n"
     else
         printf "\033[32;1mInstalled dnsmasq-full\033[0m\n"
         cd /tmp/ && apk download dnsmasq-full
-        apk remove dnsmasq && apk install dnsmasq-full --cache /tmp/
+        apk remove dnsmasq && apk add dnsmasq-full --cache /tmp/
 
         [ -f /etc/config/dhcp-apk ] && cp /etc/config/dhcp /etc/config/dhcp-old && mv /etc/config/dhcp-apk /etc/config/dhcp
 fi
@@ -476,7 +476,7 @@ add_dns_resolver() {
     echo "Configure DNSCrypt2 or Stubby? It does matter if your ISP is spoofing DNS requests"
     DISK=$(df -m / | awk 'NR==2{ print $2 }')
     if [[ "$DISK" -lt 32 ]]; then 
-        printf "\033[31;1mYour router a disk have less than 32MB. It is not recommended to install DNSCrypt, it takes 10MB\033[0m\n"
+        printf "\033[31;1mYour router a disk have less than 32MB. It is not recommended to add DNSCrypt, it takes 10MB\033[0m\n"
     fi
     echo "Select:"
     echo "1) No [Default]"
@@ -509,11 +509,11 @@ add_dns_resolver() {
     done
 
     if [ "$DNS_RESOLVER" == 'DNSCRYPT' ]; then
-        if apk list-installed | grep -q dnscrypt-proxy2; then
+        if apk list --installed dnscrypt-proxy2; then
             printf "\033[32;1mDNSCrypt2 already installed\033[0m\n"
         else
             printf "\033[32;1mInstalled dnscrypt-proxy2\033[0m\n"
-            apk install dnscrypt-proxy2
+            apk add dnscrypt-proxy2
             if grep -q "# server_names" /etc/dnscrypt-proxy2/dnscrypt-proxy.toml; then
                 sed -i "s/^# server_names =.*/server_names = [\'google\', \'cloudflare\', \'scaleway-fr\', \'yandex\']/g" /etc/dnscrypt-proxy2/dnscrypt-proxy.toml
             fi
@@ -534,7 +534,7 @@ add_dns_resolver() {
 
                 /etc/init.d/dnsmasq restart
             else
-                printf "\033[31;1mDNSCrypt not download list on /etc/dnscrypt-proxy2. Repeat install DNSCrypt by script.\033[0m\n"
+                printf "\033[31;1mDNSCrypt not download list on /etc/dnscrypt-proxy2. Repeat add DNSCrypt by script.\033[0m\n"
             fi
     fi
 
@@ -543,11 +543,11 @@ add_dns_resolver() {
     if [ "$DNS_RESOLVER" == 'STUBBY' ]; then
         printf "\033[32;1mConfigure Stubby\033[0m\n"
 
-        if apk list-installed | grep -q stubby; then
+        if apk list --installed stubby; then
             printf "\033[32;1mStubby already installed\033[0m\n"
         else
             printf "\033[32;1mInstalled stubby\033[0m\n"
-            apk install stubby
+            apk add stubby
 
             printf "\033[32;1mConfigure Dnsmasq for Stubby\033[0m\n"
             uci set dhcp.@dnsmasq[0].noresolv="1"
@@ -565,16 +565,16 @@ add_dns_resolver() {
 
 add_packages() {
     for package in curl nano; do
-        if apk list-installed | grep -q "^$package "; then
+        if apk list --installed "^$package "; then
             printf "\033[32;1m$package already installed\033[0m\n"
         else
             printf "\033[32;1mInstalling $package...\033[0m\n"
-            apk install "$package"
+            apk add "$package"
             
             if "$package" --version >/dev/null 2>&1; then
                 printf "\033[32;1m$package was successfully installed and available\033[0m\n"
             else
-                printf "\033[31;1mError: failed to install $package\033[0m\n"
+                printf "\033[31;1mError: failed to add $package\033[0m\n"
                 exit 1
             fi
         fi
@@ -684,11 +684,11 @@ add_internal_wg() {
         PROTO="wireguard"
         ZONE_NAME="wg_internal"
 
-        if apk list-installed | grep -q wireguard-tools; then
+        if apk list --installed wireguard-tools; then
             echo "Wireguard already installed"
         else
             echo "Installed wg..."
-            apk install wireguard-tools
+            apk add wireguard-tools
         fi
     fi
 
@@ -877,7 +877,7 @@ install_awg_packages() {
     AWG_DIR="/tmp/amneziawg"
     mkdir -p "$AWG_DIR"
 
-    if apk list-installed | grep -q amneziawg-tools; then
+    if apk list --installed amneziawg-tools; then
         echo "amneziawg-tools already installed"
     else
         AMNEZIAWG_TOOLS_FILENAME="amneziawg-tools${PKGPOSTFIX}"
@@ -887,21 +887,21 @@ install_awg_packages() {
         if [ $? -eq 0 ]; then
             echo "amneziawg-tools file downloaded successfully"
         else
-            echo "Error downloading amneziawg-tools. Please, install amneziawg-tools manually and run the script again"
+            echo "Error downloading amneziawg-tools. Please, add amneziawg-tools manually and run the script again"
             exit 1
         fi
 
-        apk install "$AWG_DIR/$AMNEZIAWG_TOOLS_FILENAME"
+        apk add "$AWG_DIR/$AMNEZIAWG_TOOLS_FILENAME"
 
         if [ $? -eq 0 ]; then
             echo "amneziawg-tools file downloaded successfully"
         else
-            echo "Error installing amneziawg-tools. Please, install amneziawg-tools manually and run the script again"
+            echo "Error installing amneziawg-tools. Please, add amneziawg-tools manually and run the script again"
             exit 1
         fi
     fi
     
-    if apk list-installed | grep -q kmod-amneziawg; then
+    if apk list --installed kmod-amneziawg; then
         echo "kmod-amneziawg already installed"
     else
         KMOD_AMNEZIAWG_FILENAME="kmod-amneziawg${PKGPOSTFIX}"
@@ -911,21 +911,21 @@ install_awg_packages() {
         if [ $? -eq 0 ]; then
             echo "kmod-amneziawg file downloaded successfully"
         else
-            echo "Error downloading kmod-amneziawg. Please, install kmod-amneziawg manually and run the script again"
+            echo "Error downloading kmod-amneziawg. Please, add kmod-amneziawg manually and run the script again"
             exit 1
         fi
         
-        apk install "$AWG_DIR/$KMOD_AMNEZIAWG_FILENAME"
+        apk add "$AWG_DIR/$KMOD_AMNEZIAWG_FILENAME"
 
         if [ $? -eq 0 ]; then
             echo "kmod-amneziawg file downloaded successfully"
         else
-            echo "Error installing kmod-amneziawg. Please, install kmod-amneziawg manually and run the script again"
+            echo "Error installing kmod-amneziawg. Please, add kmod-amneziawg manually and run the script again"
             exit 1
         fi
     fi
     
-    if apk list-installed | grep -q luci-app-amneziawg; then
+    if apk list --installed luci-app-amneziawg; then
         echo "luci-app-amneziawg already installed"
     else
         LUCI_APP_AMNEZIAWG_FILENAME="luci-app-amneziawg${PKGPOSTFIX}"
@@ -935,16 +935,16 @@ install_awg_packages() {
         if [ $? -eq 0 ]; then
             echo "luci-app-amneziawg file downloaded successfully"
         else
-            echo "Error downloading luci-app-amneziawg. Please, install luci-app-amneziawg manually and run the script again"
+            echo "Error downloading luci-app-amneziawg. Please, add luci-app-amneziawg manually and run the script again"
             exit 1
         fi
 
-        apk install "$AWG_DIR/$LUCI_APP_AMNEZIAWG_FILENAME"
+        apk add "$AWG_DIR/$LUCI_APP_AMNEZIAWG_FILENAME"
 
         if [ $? -eq 0 ]; then
             echo "luci-app-amneziawg file downloaded successfully"
         else
-            echo "Error installing luci-app-amneziawg. Please, install luci-app-amneziawg manually and run the script again"
+            echo "Error installing luci-app-amneziawg. Please, add luci-app-amneziawg manually and run the script again"
             exit 1
         fi
     fi
