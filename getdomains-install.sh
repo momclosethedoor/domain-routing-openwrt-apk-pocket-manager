@@ -643,6 +643,7 @@ cat << 'EOF' >> /etc/init.d/getdomains
     count=0
     while true; do
         if curl -m 3 github.com; then
+            mkdir /tmp/dnsmasq.d
             curl -f $DOMAINS --output /tmp/dnsmasq.d/domains.lst
             break
         else
