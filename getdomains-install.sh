@@ -42,7 +42,7 @@ add_mark() {
         uci set network.@rule[-1].mark='0x1'
         uci set network.@rule[-1].priority='100'
         uci set network.@rule[-1].lookup='vpn'
-        uci commit
+        uci commit network
     fi
 }
 
@@ -159,7 +159,7 @@ add_tunnel() {
         uci set network.@wireguard_wg0[0].endpoint_host=$WG_ENDPOINT
         uci set network.@wireguard_wg0[0].allowed_ips='0.0.0.0/0'
         uci set network.@wireguard_wg0[0].endpoint_port=$WG_ENDPOINT_PORT
-        uci commit
+        uci commit network
     fi
 
     if [ "$TUNNEL" == 'ovpn' ]; then
@@ -309,7 +309,7 @@ EOF
         uci set network.@amneziawg_awg0[0].endpoint_host=$AWG_ENDPOINT
         uci set network.@amneziawg_awg0[0].allowed_ips='0.0.0.0/0'
         uci set network.@amneziawg_awg0[0].endpoint_port=$AWG_ENDPOINT_PORT
-        uci commit
+        uci commit network
     fi
 
 }
@@ -451,7 +451,7 @@ add_set() {
         uci add firewall ipset
         uci set firewall.@ipset[-1].name='vpn_domains'
         uci set firewall.@ipset[-1].match='dst_net'
-        uci commit
+        uci commit firewall
     fi
     if uci show firewall | grep -q "@rule.*name='mark_domains'"; then
         printf "\033[32;1mRule for set already exist\033[0m\n"
@@ -467,7 +467,7 @@ add_set() {
         uci set firewall.@rule[-1].set_mark='0x1'
         uci set firewall.@rule[-1].target='MARK'
         uci set firewall.@rule[-1].family='ipv4'
-        uci commit
+        uci commit firewall
     fi
 }
 
@@ -776,7 +776,7 @@ add_internal_wg() {
         uci set network.@rule[-1].mark='0x2'
         uci set network.@rule[-1].priority='110'
         uci set network.@rule[-1].lookup='vpninternal'
-        uci commit
+        uci commit network
     fi
 
     if ! uci show network | grep -q vpn_route_internal; then
@@ -984,6 +984,7 @@ show_manual
 
 add_set
 
+dnsmasqfull
 
 add_dns_resolver
 
