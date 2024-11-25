@@ -984,7 +984,7 @@ show_manual
 
 add_set
 
-dnsmasqfull
+#dnsmasqfull
 
 add_dns_resolver
 
